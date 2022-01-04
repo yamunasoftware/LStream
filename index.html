@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+  <!-- Meta Tags -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1, width=device-width, height=device-height, viewport-fit=cover">
+  
+  <!-- Tab -->
+  <head>
+    <title> LStream </title>
+    <link rel="shortcut icon" type="image/png" href="/src/Images/small_icon.png" />
+  </head>
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" type="text/css" href="/src/CSS/style.css" />
+  <link rel="stylesheet" type="text/css" href="/src/CSS/fonts.css" />
+
+  <!-- Script -->
+  <script>
+    //Play Video Function:
+    function playVideo() {
+      //Gets the Elements:
+      var video = document.getElementById('videoPlayer');
+      var source = document.createElement('source');
+      var file = document.getElementById('fileInput').value;
+
+      //Error Handler:
+      video.addEventListener('error', function(e) {
+        //Displays Message:
+        showMessage("No Video Found");
+      }, true);
+
+      //Checks the Case:
+      if (file != "") {
+        //Sets the Video Attributes:
+        source.setAttribute('src', '/src/Media/' + file + '.mp4');
+        source.setAttribute('type', 'video/mp4');
+
+        //Plays the Video:
+        video.appendChild(source);
+        video.play();
+      }
+
+      else {
+        //Displays Message:
+        showMessage("No Video Found");
+      }
+    }
+
+    //Show Message Function:
+    function showMessage(message) {
+      //Sets the Message:
+      document.getElementById('message').innerHTML = message;
+    }
+  </script>
+
+  <!-- Container -->
+  <div id="container">
+
+    <!-- Body -->
+    <body>
+      <!-- Page Header -->
+      <div id="header"> LStream </div>
+
+      <!-- Main Content -->
+      <div id="mainContent">
+        <!-- Video Container -->
+        <div id="videoContainer">
+          <!-- Video Player-->
+          <video controls id="videoPlayer"></video>
+        </div>
+
+        <!-- File Container -->
+        <div id="fileContainer">
+          <!-- File Path Input -->
+          <input id="fileInput" />
+          &nbsp; <button onclick="playVideo();"> Play </button>
+        </div>
+
+        <!-- Message -->
+        <div id="message"></div>
+      </div>
+    </body>
+  </div>
+
+</html>
