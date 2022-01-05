@@ -48,6 +48,12 @@
       }
     }
 
+    //FullScreen Function:
+    function enterFullScreen() {
+      //Sets the FullScreen:
+      document.getElementById('videoPlayer').webkitRequestFullscreen();
+    }
+
     //Show Message Function:
     function showMessage(message) {
       //Sets the Message:
@@ -76,6 +82,7 @@
           <!-- File Path Input -->
           <input id="fileInput" />
           &nbsp; <button onclick="playVideo();"> Play </button>
+          &nbsp; <button onclick="enterFullScreen();"> Full </button>
         </div>
 
         <!-- Message -->
