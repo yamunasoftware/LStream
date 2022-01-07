@@ -2,93 +2,211 @@
 
 <html lang="en">
 
-  <!-- Meta Tags -->
-  <meta charset="utf-8" />
-  <meta name="viewport" content="initial-scale=1, width=device-width, height=device-height, viewport-fit=cover">
-  
-  <!-- Tab -->
-  <head>
-    <title> LStream </title>
-    <link rel="shortcut icon" type="image/png" href="/src/Images/small_icon.png" />
-  </head>
+<!-- Meta Tags -->
+<meta charset="utf-8" />
+<meta name="viewport" content="initial-scale=1, width=device-width, height=device-height, viewport-fit=cover">
 
-  <!-- Stylesheets -->
-  <link rel="stylesheet" type="text/css" href="/src/CSS/style.css" />
-  <link rel="stylesheet" type="text/css" href="/src/CSS/fonts.css" />
+<!-- Tab -->
+<head>
+  <title> LStream </title>
+</head>
 
-  <!-- Script -->
-  <script>
-    //Play Video Function:
-    function playVideo() {
-      //Gets the Elements:
-      var video = document.getElementById('videoPlayer');
-      var source = document.createElement('source');
-      var file = document.getElementById('fileInput').value;
+<!-- Stylesheet -->
+<style>
+  /* ELEMENTS CONTROL */
 
-      //Error Handler:
-      video.addEventListener('error', function(e) {
-        //Displays Message:
-        showMessage("No Video Found");
-      }, true);
+  html, body, #container {
+    margin: 0px;
+    background-color: #000000;
+    width: 100%;
+    height: 100%;
+    scroll-behavior: smooth;
+    font-size: 20px;
+    color: #4475B8;
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+  }
 
-      //Checks the Case:
-      if (file != "") {
-        //Sets the Video Attributes:
-        source.setAttribute('src', '/src/Media/' + file + '.mp4');
-        source.setAttribute('type', 'video/mp4');
+  #header {
+    font-size: 60px;
+  }
 
-        //Plays the Video:
-        video.appendChild(source);
-        video.play();
-      }
+  #mainContent {
+    margin: 20px;
+  }
 
-      else {
-        //Displays Message:
-        showMessage("No Video Found");
-      }
+  #videoPlayer {
+    width: 50%;
+    height: 50%;
+  }
+
+  #message {
+    font-size: 30px;
+  }
+
+  /* CONTROL STYLES */
+
+  button {
+    margin: 20px 0px 20px 0px;
+    font-size: 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #4475B8;
+    color: #000000;
+    cursor: pointer;
+    padding: 5px;
+  }
+
+  button:hover {
+    background-color: #1662CE;
+  }
+
+  input {
+    margin: 20px 0px 20px 20px;
+    width: 30%;
+    font-size: 20px;
+    border-radius: 0px;
+    border: 5px solid #4475B8;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  input:focus {
+    border: 5px solid #1662CE;
+    outline-color: #1662CE;
+    outline-style: solid;
+    outline-width: medium;
+  }
+
+  /* SCROLLING */
+
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #000000;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #4475B8;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #1662CE;
+  }
+</style>
+
+<!-- Script -->
+<script>
+  /* VIDEO FUNCTIONS */
+
+  //Key Event Listener:
+  window.addEventListener("keydown", function (e) {
+    //Checks the Case:
+    if (e.key == "Enter") {
+      //Runs the Play:
+      playVideo();
+    }
+  }, true);
+
+  //Play Video Function:
+  function playVideo() {
+    //Gets the Video Elements:
+    var video = document.getElementById('videoPlayer');
+    var source = document.createElement('source');
+    var file = document.getElementById('fileInput').value;
+
+    //Video Error Event Listener:
+    video.addEventListener("error", function (e) {
+      //Shows the Error:
+      showError();
+    }, true);
+
+    //Checks the Case:
+    if (file != "") {
+      //Sets the Video Attributes:
+      source.setAttribute('src', '/Media/' + file + '.mp4');
+      source.setAttribute('type', 'video/mp4');
+
+      //Plays the Video:
+      video.appendChild(source);
+      video.webkitRequestFullscreen();
+      video.play();
+
+      //Sets the Scrubbing:
+      autoScrub(file);
+      setAutoScrub(file);
     }
 
-    //FullScreen Function:
-    function enterFullScreen() {
-      //Sets the FullScreen:
-      document.getElementById('videoPlayer').webkitRequestFullscreen();
+    else {
+      //Shows Error:
+      showError();
     }
+  }
 
-    //Show Message Function:
-    function showMessage(message) {
-      //Sets the Message:
-      document.getElementById('message').innerHTML = message;
+  /* SCRUB FUNCTIONS */
+
+  //Automatic Scrub Function:
+  function autoScrub(file) {
+    //Gets the Scrub Value:
+    var video = document.getElementById('videoPlayer');
+    var scrub = localStorage.getItem(file);
+    
+    //Checks the Case:
+    if (scrub != null) {
+      //Scrubs to the Value:
+      var numberValue = JSON.parse(scrub);
+      video.currentTime = numberValue;
     }
-  </script>
+  }
 
-  <!-- Container -->
-  <div id="container">
+  //Set Automatic Scrub Function:
+  function setAutoScrub(file) {
+    //Video Element:
+    var video = document.getElementById('videoPlayer');
+    
+    //Scrub Interval:
+    setInterval(function () {
+      //Sets the Automatic Scrub Value:
+      localStorage.setItem(file, video.currentTime);
+    }, 1000);
+  }
 
-    <!-- Body -->
-    <body>
-      <!-- Page Header -->
-      <div id="header"> LStream </div>
+  //Show Error Function:
+  function showError() {
+    //Displays Alert:
+    alert("No Video Found");
+    window.location.reload();
+  }
+</script>
 
-      <!-- Main Content -->
-      <div id="mainContent">
-        <!-- Video Container -->
-        <div id="videoContainer">
-          <!-- Video Player-->
-          <video controls id="videoPlayer"></video>
-        </div>
+<!-- Container -->
+<div id="container">
 
-        <!-- File Container -->
-        <div id="fileContainer">
-          <!-- File Path Input -->
-          <input id="fileInput" />
-          &nbsp; <button onclick="playVideo();"> Play </button>
-          &nbsp; <button onclick="enterFullScreen();"> Full </button>
-        </div>
+  <!-- Body -->
+  <body>
+    <!-- Page Header -->
+    <div id="header"> LStream </div>
 
-        <!-- Message -->
-        <div id="message"></div>
+    <!-- Main Content -->
+    <div id="mainContent">
+      <!-- Video Container -->
+      <div id="videoContainer">
+        <!-- Video Player-->
+        <video controls id="videoPlayer"></video>
       </div>
-    </body>
-  </div>
+
+      <!-- File Container -->
+      <div id="fileContainer">
+        <!-- File Path Input -->
+        <input id="fileInput" />
+        &nbsp; <button onclick="playVideo();"> Play </button>
+        &nbsp; <button onclick="window.location.reload();"> New </button>
+      </div>
+    </div>
+  </body>
+</div>
 
 </html>
