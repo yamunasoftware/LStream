@@ -147,13 +147,9 @@
         var array = JSON.parse(localStorage.getItem(videos[turns]));
         var remaining = array[1] - array[0];
 
-        //Hours Calculations:
-        var hours = remaining / 3600.0;
-        var hours = hours.toFixed(0);
-
-        //Minutes Calculations:
-        var minutes = (remaining / 60.0) - (hours * 60.0);
-        minutes = minutes.toFixed(0);
+        //Time Calculations:
+        var hours = (remaining / 3600.0).toFixed(0);
+        var minutes = ((remaining / 60.0) % 60.0).toFixed(0);
         
         //Adds and Element:
         videoDOM += "<br /> <br />" + 
@@ -188,13 +184,15 @@
 
   //Set Automatic Scrub Function:
   function setAutoScrub(file) {
-    //Video Element:
+    //Video Elements:
     var video = document.getElementById('videoPlayer');
+    var current = video.currentTime.toFixed(0);
+    var duration = video.duration.toFixed(0);
     
     //Scrub Interval:
     setInterval(function () {
       //Sets the Automatic Scrub Value:
-      var array = [video.currentTime, video.duration];
+      var array = [current, duration];
       localStorage.setItem(file, JSON.stringify(array));
     }, 1000);
   }
