@@ -138,14 +138,22 @@
     mainLoop: while (turns < videos.length) {
       //Adds an Element:
       videoDOM += 
-        "<button class='card' onclick='playVideo(" + JSON.stringify(videos[turns]) + ");'>" + 
+        "<div> <button class='card' onclick='playVideo(" + JSON.stringify(videos[turns]) + ");'>" + 
         videos[turns];
 
       //Checks the Case:
       if (localStorage.getItem(videos[turns]) != null) {
-        //Time Variables:
-        var hours = Math.round(JSON.parse(localStorage.getItem(videos[turns]) / 3600.0));
-        var minutes = Math.round(JSON.parse(localStorage.getItem(videos[turns]) / 60.0));
+        //Time Array Variables:
+        var array = JSON.parse(localStorage.getItem(videos[turns]));
+        var remaining = array[1] - array[0];
+
+        //Hours Calculations:
+        var hours = remaining / 3600.0;
+        var hours = hours.toFixed(0);
+
+        //Minutes Calculations:
+        var minutes = (remaining / 60.0) - (hours * 60.0);
+        minutes = minutes.toFixed(0);
         
         //Adds and Element:
         videoDOM += "<br /> <br />" + 
@@ -153,7 +161,7 @@
       }
 
       //Adds and Element:
-      videoDOM += "</button>";
+      videoDOM += "</button> </div>";
       
       turns++;
     }
@@ -173,8 +181,8 @@
     //Checks the Case:
     if (scrub != null) {
       //Scrubs to the Value:
-      var numberValue = JSON.parse(scrub);
-      video.currentTime = numberValue;
+      var array = JSON.parse(scrub);
+      video.currentTime = array[0];
     }
   }
 
@@ -186,7 +194,8 @@
     //Scrub Interval:
     setInterval(function () {
       //Sets the Automatic Scrub Value:
-      localStorage.setItem(file, video.currentTime);
+      var array = [video.currentTime, video.duration];
+      localStorage.setItem(file, JSON.stringify(array));
     }, 1000);
   }
 </script>
