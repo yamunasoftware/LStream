@@ -130,18 +130,36 @@
 
   //Find Videos Function:
   function findVideos() {
-    //Loop Variable:
+    //Loop Variables:
     var turns = 0;
+    var videoDOM = "";
 
     //Loops through Array:
     mainLoop: while (turns < videos.length) {
       //Adds an Element:
-      document.getElementById('selectionContainer').innerHTML = 
+      videoDOM += 
         "<button class='card' onclick='playVideo(" + JSON.stringify(videos[turns]) + ");'>" + 
-        videos[turns] + "</button>";
+        videos[turns];
+
+      //Checks the Case:
+      if (localStorage.getItem(videos[turns]) != null) {
+        //Time Variables:
+        var hours = Math.round(JSON.parse(localStorage.getItem(videos[turns]) / 3600.0));
+        var minutes = Math.round(JSON.parse(localStorage.getItem(videos[turns]) / 60.0));
+        
+        //Adds and Element:
+        videoDOM += "<br /> <br />" + 
+          hours + "h " + minutes + "m";
+      }
+
+      //Adds and Element:
+      videoDOM += "</button>";
       
       turns++;
     }
+
+    //Sets the Inner HTML:
+    document.getElementById('selectionContainer').innerHTML = videoDOM;
   }
 
   /* SCRUB FUNCTIONS */
