@@ -28,55 +28,25 @@
     font-weight: bold;
   }
 
-  #header {
-    font-size: 60px;
-  }
-
-  #mainContent {
-    margin: 20px;
-  }
-
   #videoPlayer {
     width: 50%;
     height: 50%;
   }
 
-  #message {
-    font-size: 30px;
-  }
+  /* CLASSES CONTROL */
 
-  /* CONTROL STYLES */
-
-  button {
-    margin: 20px 0px 20px 0px;
-    font-size: 20px;
-    border: none;
-    border-radius: 5px;
-    background-color: #4475B8;
-    color: #000000;
-    cursor: pointer;
-    padding: 5px;
-  }
-
-  button:hover {
-    background-color: #1662CE;
-  }
-
-  input {
-    margin: 20px 0px 20px 20px;
-    width: 30%;
-    font-size: 20px;
-    border-radius: 0px;
+  .card {
+    margin: 20px;
+    padding: 20px;
+    border-radius: 10px;
     border: 5px solid #4475B8;
-    border-radius: 5px;
-    cursor: pointer;
+    background-color: #000000;
+    color: #4475B8;
+    font-size: 20px;
   }
 
-  input:focus {
-    border: 5px solid #1662CE;
-    outline-color: #1662CE;
-    outline-style: solid;
-    outline-width: medium;
+  .card:hover {
+    border: 5px solid #FFFFFF;
   }
 
   /* SCROLLING */
@@ -98,9 +68,24 @@
   }
 </style>
 
+<!-- Videos Script -->
+<script>
+  //Videos Array:
+  var videos = [
+    "sample"
+  ];
+</script>
+
 <!-- Script -->
 <script>
-  /* VIDEO FUNCTIONS */
+  /* WINDOW FUNCTIONS */
+
+  //Onload Function:
+  window.onload = function () {
+    //Find the Videos:
+    document.getElementById('videoContainer').style.display = "none";
+    findVideos();
+  }
 
   //Key Event Listener:
   window.addEventListener("keydown", function (e) {
@@ -111,38 +96,51 @@
     }
   }, true);
 
+  /* VIDEO FUNCTIONS */
+
   //Play Video Function:
-  function playVideo() {
+  function playVideo(file) {
     //Gets the Video Elements:
     var video = document.getElementById('videoPlayer');
     var source = document.createElement('source');
-    var file = document.getElementById('fileInput').value;
+    document.getElementById('selectionContainer').style.display = "none";
+    document.getElementById('videoContainer').style.display = "block";
 
     //Video Error Event Listener:
     video.addEventListener("error", function (e) {
-      //Shows the Error:
-      showError();
+      //Displays Error:
+      alert("An Error Ocurred\nPlease Try Again");
+      window.location.reload();
     }, true);
 
-    //Checks the Case:
-    if (file != "") {
-      //Sets the Video Attributes:
-      source.setAttribute('src', '/Media/' + file + '.mp4');
-      source.setAttribute('type', 'video/mp4');
+    //Sets the Video Attributes:
+    source.setAttribute('src', '/Media/' + file + '.mp4');
+    source.setAttribute('type', 'video/mp4');
 
-      //Plays the Video:
-      video.appendChild(source);
-      video.webkitRequestFullscreen();
-      video.play();
+    //Plays the Video:
+    video.appendChild(source);
+    video.setAttribute("controls", "controls");
+    video.webkitRequestFullscreen();
+    video.play();
 
-      //Sets the Scrubbing:
-      autoScrub(file);
-      setAutoScrub(file);
-    }
+    //Sets the Scrubbing:
+    autoScrub(file);
+    setAutoScrub(file);
+  }
 
-    else {
-      //Shows Error:
-      showError();
+  //Find Videos Function:
+  function findVideos() {
+    //Loop Variable:
+    var turns = 0;
+
+    //Loops through Array:
+    mainLoop: while (turns < videos.length) {
+      //Adds an Element:
+      document.getElementById('selectionContainer').innerHTML = 
+        "<button class='card' onclick='playVideo(" + JSON.stringify(videos[turns]) + ");'>" + 
+        videos[turns] + "</button>";
+      
+      turns++;
     }
   }
 
@@ -173,13 +171,6 @@
       localStorage.setItem(file, video.currentTime);
     }, 1000);
   }
-
-  //Show Error Function:
-  function showError() {
-    //Displays Alert:
-    alert("No Video Found");
-    window.location.reload();
-  }
 </script>
 
 <!-- Container -->
@@ -187,25 +178,19 @@
 
   <!-- Body -->
   <body>
-    <!-- Page Header -->
-    <div id="header"> LStream </div>
-
-    <!-- Main Content -->
-    <div id="mainContent">
-      <!-- Video Container -->
-      <div id="videoContainer">
-        <!-- Video Player-->
-        <video controls id="videoPlayer"></video>
+    <!-- Video Container -->
+    <div id="videoContainer" style="margin: 20px;">
+      <!-- Video Player-->
+      <div id="vidoHolder">
+        <video id="videoPlayer"></video>
       </div>
-
-      <!-- File Container -->
-      <div id="fileContainer">
-        <!-- File Path Input -->
-        <input id="fileInput" />
-        &nbsp; <button onclick="playVideo();"> Play </button>
-        &nbsp; <button onclick="window.location.reload();"> New </button>
-      </div>
+        
+      <!-- New Query Button -->
+      <button class="card" onclick="window.location.reload();"> New </button>
     </div>
+
+    <!-- Selection Container -->
+    <div id="selectionContainer"></div>
   </body>
 </div>
 

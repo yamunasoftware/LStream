@@ -9,3 +9,4 @@ Video Streaming Client for Local Servers
 - Make sure that all media is properly encoded
 - Use Chrome, Firefox, or Edge browsers for best compatibility
 - Make media names easy to type for quicker access
+- Add media file names to the "videos" array in the index.html file
