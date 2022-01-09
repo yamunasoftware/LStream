@@ -140,11 +140,12 @@
       videoDOM += 
         "<div> <button class='card' onclick='playVideo(" + JSON.stringify(videos[turns]) + ");'>" + 
         videos[turns];
+      var scrub = localStorage.getItem(videos[turns]);
 
       //Checks the Case:
-      if (localStorage.getItem(videos[turns]) != null) {
+      if (scrub != null) {
         //Time Array Variables:
-        var array = localStorage.getItem(videos[turns]);
+        var array = JSON.parse(scrub);
         var remaining = array[1] - array[0];
 
         //Time Calculations:
@@ -177,7 +178,7 @@
     //Checks the Case:
     if (scrub != null) {
       //Scrubs to the Value:
-      var array = scrub;
+      var array = JSON.parse(scrub);
       video.currentTime = array[0];
     }
   }
@@ -193,13 +194,9 @@
       var current = video.currentTime;
       var duration = video.duration;
 
-      //Formats the Decimals:
-      current.toFixed(0);
-      duration.toFixed(0);
-
       //Sets the Automatic Scrub Value:
       var array = [current, duration];
-      localStorage.setItem(file, array);
+      localStorage.setItem(file, JSON.stringify(array));
     }, 1000);
   }
 </script>
