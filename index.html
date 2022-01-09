@@ -149,8 +149,8 @@
         var remaining = array[1] - array[0];
 
         //Time Calculations:
-        var hours = (remaining / 3600.0).toFixed(0);
-        var minutes = ((remaining / 60.0) % 60.0).toFixed(0);
+        var hours = Math.floor(remaining / 3600.0);
+        var minutes = Math.floor((remaining / 60.0) % 60.0);
         
         //Adds and Element:
         videoDOM += "<br /> <br />" + 
