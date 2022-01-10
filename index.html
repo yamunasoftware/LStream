@@ -146,11 +146,20 @@
         //Time Array Variables:
         var array = JSON.parse(localStorage.getItem(videos[turns]));
         var remaining = array[1] - array[0];
-        
-        //Adds and Element:
-        videoDOM += "<br /> <br />" + 
-          Math.floor(remaining / 3600.0) + "h " + 
-          Math.floor((remaining / 60.0) % 60.0) + "m";
+
+        //Checks the Case:
+        if (remaining != 0) {
+          //Adds and Element:
+          videoDOM += "<br /> <br />" + 
+            Math.floor(remaining / 3600.0) + "h " + 
+            Math.floor((remaining / 60.0) % 60.0) + "m " + 
+            Math.floor(remaining % 3600.0) + "s";
+        }
+
+        else {
+          //Deletes the Cached Item:
+          localStorage.removeItem(videos[turns]);
+        }
       }
 
       //Adds and Element:
