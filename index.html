@@ -147,13 +147,16 @@
         var array = JSON.parse(localStorage.getItem(videos[turns]));
         var remaining = array[1] - array[0];
 
+        //Time Calculations:
+        var hours = Math.floor(remaining / 3600.0);
+        var minutes = Math.floor((remaining / 60.0) - (hours * 60.0));
+        var seconds = Math.floor(remaining - (minutes * 60.0));
+
         //Checks the Case:
         if (remaining != 0) {
           //Adds and Element:
           videoDOM += "<br /> <br />" + 
-            Math.floor(remaining / 3600.0) + "h " + 
-            Math.floor((remaining / 60.0) % 60.0) + "m " + 
-            Math.floor(remaining % 3600.0) + "s";
+            hours + "h " +  minutes + "m " + seconds + "s";
         }
 
         else {
