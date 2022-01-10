@@ -120,8 +120,19 @@
     //Plays the Video:
     video.appendChild(source);
     video.setAttribute("controls", "controls");
-    video.webkitRequestFullscreen();
-    video.play();
+    video.requestFullscreen().then((event) => {
+      //Video FullScreen Event Listener:
+      video.addEventListener("fullscreenchange", function (e) {
+        //Checks the Case:
+        if (document.fullscreenElement == null) {
+          //Reloads the Page:
+          window.location.reload();
+        }
+      });
+      
+      //Plays the Video:
+      video.play();
+    });
 
     //Sets the Scrubbing:
     autoScrub(file);
@@ -215,9 +226,6 @@
       <div id="vidoHolder">
         <video id="videoPlayer"></video>
       </div>
-        
-      <!-- New Query Button -->
-      <button class="card" onclick="window.location.reload();"> New </button>
     </div>
 
     <!-- Selection Container -->
