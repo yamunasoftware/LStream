@@ -161,7 +161,7 @@
         //Time Calculations:
         var hours = Math.floor(remaining / 3600.0);
         var minutes = Math.floor((remaining / 60.0) - (hours * 60.0));
-        var seconds = Math.floor(remaining - (minutes * 60.0));
+        var seconds = Math.floor(remaining - (hours * 3600.0) - (minutes * 60.0));
 
         //Checks the Case:
         if (remaining != 0) {
