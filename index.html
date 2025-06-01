@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <!-- Meta Tags -->
@@ -73,21 +72,17 @@
   }
 </style>
 
-<!-- Videos Script -->
-<script>
-  //Videos Array:
-  var videos = [
-    "sample"
-  ];
-</script>
-
 <!-- Script -->
 <script>
-  /* WINDOW FUNCTIONS */
+  /* APP SETUP */
+
+  //Video Array:
+  var videos = [];
 
   //Onload Function:
-  window.onload = function () {
+  window.onload = async function () {
     //Find the Videos:
+    videos = await getVideos();
     document.getElementById('videoContainer').style.display = "none";
     findVideos();
   }
@@ -102,6 +97,22 @@
   }, true);
 
   /* VIDEO FUNCTIONS */
+
+  //Get Videos Function:
+  async function getVideos() {
+    //Fetches the Filenames:
+    var localVideos = [];
+    const response = await fetch('/media');
+    const files = await response.json();
+
+    for (var i = 0; i < files.length; i++) {
+      //Checks the Case:
+      if (files[i].includes(".mp4")) {
+        localVideos.push(files[i]);
+      }
+    }
+    return localVideos;
+  }
 
   //Play Video Function:
   function playVideo(file) {
@@ -119,7 +130,7 @@
     }, true);
 
     //Sets the Video Attributes:
-    source.setAttribute('src', '/Media/' + file + '.mp4');
+    source.setAttribute('src', '/media/' + file);
     source.setAttribute('type', 'video/mp4');
 
     //Plays the Video:
@@ -155,7 +166,7 @@
       //Adds an Element:
       videoDOM += 
         "<div> <p class='card' onclick='playVideo(" + JSON.stringify(videos[turns]) + ");'>" + 
-        videos[turns];
+        videos[turns].replace(".mp4", "");
 
       //Checks the Case:
       if (localStorage.getItem(videos[turns]) != null) {

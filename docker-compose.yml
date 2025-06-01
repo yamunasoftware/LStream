@@ -1,0 +1,7 @@
+services:
+  lstream:
+    build: .
+    ports:
+      - "1008:1008"
+    volumes:
+      - ./Media:/main/Media
