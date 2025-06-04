@@ -5,6 +5,6 @@ USER root
 COPY main.py .
 COPY index.html .
 
-RUN pip install --no-cache-dir flask waitress
+RUN pip install --no-cache-dir flask waitress requests
 EXPOSE 1008
 CMD [ "python", "main.py" ]

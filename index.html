@@ -39,6 +39,14 @@
     text-align: center;
   }
 
+  .message {
+    display: none;
+  }
+
+  .margin {
+    margin: 20px;
+  }
+
   .card {
     margin: 40px;
     padding: 20px;
@@ -51,6 +59,34 @@
 
   .card:hover {
     background-color: #1662CE;
+    cursor: pointer;
+  }
+
+  /* FORM ITEMS */
+
+  input[type="text"] {
+    border-radius: 5px;
+    border: none;
+    background-color: #FFFFFF;
+    color: #000000;
+    font-size: 20px;
+    padding: 10px;
+    margin: 5px;
+  }
+
+  button {
+    border-radius: 10px;
+    border: none;
+    background-color: #4475B8;
+    color: #FFFFFF;
+    font-size: 20px;
+    padding: 10px;
+    margin: 5px;
+  }
+
+  button:hover {
+    background-color: #1662CE;
+    cursor: pointer;
   }
 
   /* SCROLLING */
@@ -76,15 +112,11 @@
 <script>
   /* APP SETUP */
 
-  //Video Array:
-  var videos = [];
-
   //Onload Function:
   window.onload = async function () {
     //Find the Videos:
-    videos = await getVideos();
     document.getElementById('videoContainer').style.display = "none";
-    findVideos();
+    await findVideos();
   }
 
   //Key Event Listener:
@@ -97,6 +129,84 @@
   }, true);
 
   /* VIDEO FUNCTIONS */
+
+  //Submit Button Function:
+  async function submitForm(type) {
+    //Gets the URL and File:
+    var url = document.getElementById('videoURL').value;
+    var file = document.getElementById('videoFile').value;
+
+    //Checks the Case:
+    if (url != "" && file != "" && type == "add") {
+      //Sends the Video:
+      const status = await sendVideo(url, file);
+      alert("Downloading...");
+
+      //Checks the Status:
+      if (status == 200) {
+        //Gets Videos:
+        await findVideos();
+      }
+
+      else {
+        //Error Alert:
+        alert("Error Fetching Media\nPlease Try Again");
+        window.location.reload();
+      }
+    }
+
+    else if (file != "" && type == "delete") {
+      //Deletes Video:
+      const status = await deleteVideo(file);
+      alert("Deleting...");
+
+      //Checks the Status:
+      if (status == 200) {
+        //Gets Videos:
+        await findVideos();
+      }
+
+      else {
+        //Error Alert:
+        alert("Error Deleting Media\nPlease Try Again");
+        window.location.reload();
+      }
+    }
+
+    else {
+      //Input Alert:
+      alert("Input Name and/or URL");
+    }
+  }
+
+  //Delete Video Function:
+  async function deleteVideo(file) {
+    const response = await fetch('/delete_media', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        'file': file
+      })
+    });
+    return await response.status; 
+  }
+
+  //Send Video Function:
+  async function sendVideo(url, file) {   
+    const response = await fetch('/new_media', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        'url': url,
+        'file': file
+      })
+    });
+    return await response.status;
+  }
 
   //Get Videos Function:
   async function getVideos() {
@@ -111,7 +221,24 @@
         localVideos.push(files[i]);
       }
     }
+
+    pruneCache(localVideos);
     return localVideos;
+  }
+
+  //Prune Cache Function:
+  function pruneCache(videoList) {
+    //Loops through Cache:
+    for (var i = 0; i < localStorage.length; i++) {
+      //Gets the Key:
+      var key = localStorage.key(i);
+
+      //Checks the Case:
+      if (!videoList.includes(key)) {
+        //Removes the Item:
+        localStorage.removeItem(key);
+      }
+    }
   }
 
   //Play Video Function:
@@ -156,10 +283,11 @@
   }
 
   //Find Videos Function:
-  function findVideos() {
+  async function findVideos() {
     //Loop Variables:
     var turns = 0;
     var videoDOM = "";
+    var videos = await getVideos();
 
     //Loops through Array:
     mainLoop: while (turns < videos.length) {
@@ -236,8 +364,19 @@
 
   <!-- Body -->
   <body>
+    <!-- Request Container -->
+    <div class="mainCard" id="requestContainer">
+      <!-- Request Form -->
+      <div class="margin">
+        <input type="text" id="videoURL" placeholder="Video URL" />
+        <input type="text" id="videoFile" placeholder="Video Name" />
+        <button onclick="submitForm('add');">Add</button>
+        <button onclick="submitForm('delete');">Delete</button>
+      </div>
+    </div>
+
     <!-- Video Container -->
-    <div id="videoContainer" style="margin: 20px;">
+    <div id="videoContainer" class="margin">
       <!-- Video Player -->
       <video id="videoPlayer"></video>
     </div>
