@@ -1,9 +1,7 @@
-FROM python:3.8-slim
+FROM python:3.12-slim
 WORKDIR /main
 USER root
-
-COPY main.py .
-COPY index.html .
+COPY . .
 
 RUN pip install --no-cache-dir flask waitress requests
 EXPOSE 1008

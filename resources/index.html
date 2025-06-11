@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<!-- Meta Tags -->
-<meta charset="utf-8" />
-<meta name="viewport" content="initial-scale=1, width=device-width, height=device-height, viewport-fit=cover">
-
 <!-- Tab -->
 <head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1, width=device-width, height=device-height, viewport-fit=cover">
   <title> LStream </title>
 </head>
 
@@ -139,8 +137,8 @@
     //Checks the Case:
     if (url != "" && file != "" && type == "add") {
       //Sends the Video:
+      alert("Are you sure you want to download \"" + file + "\"?");
       const status = await sendVideo(url, file);
-      alert("Downloading...");
 
       //Checks the Status:
       if (status == 200) {
@@ -157,8 +155,8 @@
 
     else if (file != "" && type == "delete") {
       //Deletes Video:
+      alert("Are you sure you want to delete \"" + file + "\"?");
       const status = await deleteVideo(file);
-      alert("Deleting...");
 
       //Checks the Status:
       if (status == 200) {
@@ -361,8 +359,6 @@
 
 <!-- Container -->
 <div id="container">
-
-  <!-- Body -->
   <body>
     <!-- Request Container -->
     <div class="mainCard" id="requestContainer">
