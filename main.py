@@ -1,11 +1,11 @@
 ### IMPORTS ###
 
-from flask import Flask, request, jsonify, send_file, send_from_directory
+from flask import Flask, request, jsonify, send_file
 from waitress import serve
 
 import requests
-import random
 import logging
+import random
 import os
 
 ### SETUP ###
@@ -33,8 +33,7 @@ def delete_media():
     try:
       os.environ['MANAGE'] = 'TRUE'
       data = request.get_json()
-      filename = data['file'].replace('.', '').replace('/', '').replace('\\', '')
-      filename += '.mp4'
+      filename = data['file'].replace('.', '').replace('/', '').replace('\\', '') + '.mp4'
 
       if os.path.exists('media/' + filename):
         os.remove('media/' + filename)
@@ -89,8 +88,11 @@ def get_new_media():
 @app.route('/media')
 def get_media():
   if os.environ['MANAGE'] == 'FALSE':
-    files = os.listdir('media')
-    return jsonify(files), 200
+    try:
+      return jsonify(os.listdir('media')), 200
+
+    except:
+      return 'Server Error', 500
   
   else:
     return send_file('resources/busy.html'), 503
@@ -99,7 +101,11 @@ def get_media():
 @app.route('/media/<path:filename>')
 def get_file(filename):
   if os.environ['MANAGE'] == 'FALSE':
-    return send_from_directory('media', filename), 200
+    try:
+      return send_file('media/' + filename)
+    
+    except:
+      return 'Server Error', 500
   
   else:
     return send_file('resources/busy.html'), 503
@@ -108,7 +114,11 @@ def get_file(filename):
 @app.route('/')
 def index():
   if os.environ['MANAGE'] == 'FALSE':
-    return send_file('resources/index.html'), 200
+    try:
+      return send_file('resources/index.html'), 200
+    
+    except:
+      return 'Server Error', 500
   
   else:
     return send_file('resources/busy.html'), 503
