@@ -3,7 +3,7 @@
 from flask import Flask, request, jsonify, send_file
 from waitress import serve
 
-import requests
+import wget
 import logging
 import random
 import os
@@ -68,12 +68,7 @@ def get_new_media():
       else:
         filename += '.mp4'
 
-      with requests.get(url, stream=True) as response:
-        with open('media/' + filename, 'wb') as file:
-          for chunk in response.iter_content(chunk_size=8192):
-            if chunk:
-              file.write(chunk)
-      
+      wget.download(url, 'media/' + filename)
       os.environ['MANAGE'] = 'FALSE'
       return 'Success', 200
     
