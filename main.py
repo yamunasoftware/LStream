@@ -4,6 +4,7 @@ from flask import Flask, request, jsonify, send_file
 from waitress import serve
 
 import wget
+import subprocess
 import logging
 import random
 import os
@@ -23,6 +24,22 @@ def generate_signature():
   for _ in range(20):
     signature += str(random.randint(0, 9))
   return signature
+
+def convert_video(filename):
+  input_file = 'media/' + filename
+  output_file = 'media/staged_' + filename
+
+  code = subprocess.run([
+    'ffmpeg', '-i', input_file,
+    '-c:v', 'copy', '-c:a', 'copy',
+    output_file
+  ], stdout=subprocess.PIPE, stderr=subprocess.PIPE).returncode
+
+  if code != 0:
+    raise RuntimeError('FFMPEG Conversion Failed')
+
+  os.remove(input_file)
+  os.rename(output_file, input_file)
 
 ### SERVICES ###
 
@@ -69,6 +86,8 @@ def get_new_media():
         filename += '.mp4'
 
       wget.download(url, 'media/' + filename)
+      convert_video(filename)
+
       os.environ['MANAGE'] = 'FALSE'
       return 'Success', 200
     
