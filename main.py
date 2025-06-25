@@ -34,8 +34,13 @@ def convert_video(filename):
   output_file = 'media/staged_' + filename
 
   code = subprocess.run([
-    'ffmpeg', '-i', input_file,
-    '-c:v', 'copy', '-c:a', 'copy',
+    'ffmpeg',
+    '-i', input_file,
+    '-c:v', 'libx264',
+    '-c:a', 'aac',
+    '-movflags', 'faststart',
+    '-strict', 'experimental',
+    '-y',
     output_file
   ], stdout=subprocess.PIPE, stderr=subprocess.PIPE).returncode
 
@@ -44,10 +49,6 @@ def convert_video(filename):
 
   os.remove(input_file)
   os.rename(output_file, input_file)
-
-  for file in os.listdir('media'):
-    if '.tmp' in file:
-      os.remove('media/' + file)
 
 ### SERVICES ###
 
