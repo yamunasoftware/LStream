@@ -33,16 +33,17 @@ def convert_video(filename):
   input_file = 'media/' + filename
   output_file = 'media/staged_' + filename
 
-  code = subprocess.run([
+  cmd = [
     'ffmpeg',
     '-i', input_file,
-    '-c:v', 'libx264',
+    '-c:v', 'copy',
     '-c:a', 'aac',
-    '-movflags', 'faststart',
+    '-b:a', '192k',
     '-strict', 'experimental',
-    '-y',
+    '-loglevel', 'error',
     output_file
-  ], stdout=subprocess.PIPE, stderr=subprocess.PIPE).returncode
+  ]
+  code = subprocess.run(cmd, check=True).returncode
 
   if code != 0:
     raise RuntimeError('FFMPEG Conversion Failed')
@@ -112,6 +113,9 @@ def get_new_media():
 def get_media():
   if os.environ['MANAGE'] == 'FALSE':
     try:
+      for file in os.listdir('media'):
+        if '.tmp' in file:
+          os.remove(file)
       return jsonify(os.listdir('media')), 200
 
     except:
