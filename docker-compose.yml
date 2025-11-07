@@ -1,5 +1,0 @@
-services:
-  lstream:
-    build: .
-    ports:
-      - "1008:1008"
