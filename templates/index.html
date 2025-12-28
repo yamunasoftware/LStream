@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Tab -->
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="initial-scale=1, width=device-width, height=device-height, viewport-fit=cover">
+  <title> LStream </title>
+  
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<!-- JavaScript -->
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+
+<!-- Container -->
+<div id="container">
+  <body>
+    <!-- Request Container -->
+    <div class="mainCard" id="requestContainer">
+      <!-- Error Message -->
+      <div class="margin error" id="errorMessage"></div>
+      
+      <!-- Request Form -->
+      <div class="margin">
+        <input type="text" id="videoURL" placeholder="Video URL" />
+        <input type="text" id="videoName" placeholder="Video Name" />
+        <button onclick="addVideo()">Add</button>
+      </div>
+    </div>
+
+    <!-- Video Container -->
+    <div id="videoContainer" class="margin">
+      <!-- Video Player -->
+      <video id="videoPlayer"></video>
+    </div>
+
+    <!-- Main Card -->
+    <div class="mainCard">
+      <!-- Selection Container -->
+      <div id="selectionContainer"></div>
+    </div>
+  </body>
+</div>
+
+</html>

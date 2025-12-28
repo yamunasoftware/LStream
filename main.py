@@ -1,32 +1,15 @@
 ### IMPORTS ###
 
-from flask import Flask, request, jsonify, send_file
-from waitress import serve
-
-import wget
+from flask import Flask, request, jsonify, send_file, render_template, send_from_directory
+import requests
 import subprocess
-import logging
-import random
 import os
 
 ### SETUP ###
 
 # Initialize Flask App:
-os.environ['MANAGE'] = 'FALSE'
+os.environ['BUSY'] = 'FALSE'
 app = Flask(__name__)
-
-# Clears Server Log:
-def clear_log(filename):
-  with open(filename, 'w') as file:
-    pass
-    file.write('--- SERVER LOG ---\n\n')
-
-# Generates Unique File Signature:
-def generate_signature():
-  signature = ''
-  for _ in range(20):
-    signature += str(random.randint(0, 9))
-  return signature
 
 # Converts Video to Standard Playback Format:
 def convert_video(filename):
@@ -51,112 +34,77 @@ def convert_video(filename):
   os.remove(input_file)
   os.rename(output_file, input_file)
 
-### SERVICES ###
+### ENDPOINTS ###
 
-# Delete Media Service:
-@app.route('/delete_media', methods=['POST'])
-def delete_media():
-  if os.environ['MANAGE'] == 'FALSE':
-    try:
-      os.environ['MANAGE'] = 'TRUE'
-      data = request.get_json()
-      filename = data['file'].replace('.', '').replace('/', '').replace('\\', '') + '.mp4'
+# Add Video Endpoint:
+@app.route('/add_video', methods=['POST'])
+def add_video():
+  try:
+    data = request.get_json()
+    url = data['url']
+    filename = data['name'].replace('.mp4', '') + '.mp4'
 
-      if os.path.exists('media/' + filename):
-        os.remove('media/' + filename)
-        os.environ['MANAGE'] = 'FALSE'
-        return 'Success', 200
-      
-      else:
-        os.environ['MANAGE'] = 'FALSE'
-        return 'Not Found', 404
-    
-    except:
-      os.environ['MANAGE'] = 'FALSE'
-      return 'Server Error', 500
-  
-  else:
-    return send_file('resources/busy.html'), 503
+    if filename in os.listdir('media/'):
+      return 'Invalid Name', 409
 
-# Request New Media Service:
-@app.route('/new_media', methods=['POST'])
-def get_new_media():
-  if os.environ['MANAGE'] == 'FALSE':
-    try:
-      os.environ['MANAGE'] = 'TRUE'
-      files = os.listdir('media')
+    if os.environ['BUSY'] == 'FALSE':
+      os.environ['BUSY'] = 'TRUE'
+      response = requests.get(url, stream=True)
+      with open('media/' + filename, mode="wb") as file:
+        for chunk in response.iter_content(chunk_size=10*1024):
+          file.write(chunk)
 
-      data = request.get_json()
-      url = data['url']
-      filename = data['file']
-
-      if filename in files:
-        filename += '_' + generate_signature() + '.mp4'
-      else:
-        filename += '.mp4'
-
-      wget.download(url, 'media/' + filename)
       convert_video(filename)
-
-      os.environ['MANAGE'] = 'FALSE'
+      os.environ['BUSY'] = 'FALSE'
       return 'Success', 200
     
-    except:
-      os.environ['MANAGE'] = 'FALSE'
-      return 'Server Error', 500
-  
-  else:
-    return send_file('resources/busy.html'), 503
-
-# Media Files List Service:
-@app.route('/media')
-def get_media():
-  if os.environ['MANAGE'] == 'FALSE':
-    try:
-      for file in os.listdir('media'):
-        if '.tmp' in file:
-          os.remove(file)
-      return jsonify(os.listdir('media')), 200
-
-    except:
-      return 'Server Error', 500
-  
-  else:
-    return send_file('resources/busy.html'), 503
-
-# Media File Service:
-@app.route('/media/<path:filename>')
-def get_file(filename):
-  if os.environ['MANAGE'] == 'FALSE':
-    try:
-      return send_file('media/' + filename)
+    else:
+      return 'Server Busy', 503
     
-    except:
-      return 'Server Error', 500
-  
-  else:
-    return send_file('resources/busy.html'), 503
+  except:
+    os.remove('media/' + filename)
+    os.environ['BUSY'] = 'FALSE'
+    return 'Server Error', 500
 
-# Main Page Service:
+# Get Videos Endpoint:
+@app.route('/get_videos')
+def get_videos():
+  try:
+    if os.environ['BUSY'] == 'FALSE':
+      files = []
+      for file in os.listdir('media/'):
+        if file.endswith('.mp4'):
+          files.append(file.replace('.mp4', ''))
+      return jsonify(files), 200
+    
+    else:
+      return 'Server Busy', 503
+    
+  except:
+    return 'Server Error', 500
+
+# Video File Endpoint:
+@app.route('/<path:filename>')
+def get_file(filename):
+  try:
+    if os.environ['BUSY'] == 'FALSE':
+      file = filename.replace('.mp4', '') + '.mp4'
+      return send_from_directory('/main/media', file, mimetype='video/mp4', as_attachment=False)
+    else:
+      return 'Server Busy', 503
+
+  except:
+    return 'Server Error', 500
+
+# Main Page Endpoint:
 @app.route('/')
 def index():
-  if os.environ['MANAGE'] == 'FALSE':
-    try:
-      return send_file('resources/index.html'), 200
+  try:
+    return render_template('index.html'), 200
     
-    except:
-      return 'Server Error', 500
-  
-  else:
-    return send_file('resources/busy.html'), 503
+  except:
+    return 'Server Error', 500
   
 # Runs Server:
 if __name__ == '__main__':
-  filename = 'resources/server.log'
-  clear_log(filename)
-  logging.basicConfig(
-    filename=filename,
-    level=logging.DEBUG,
-    format = '%(asctime)s %(message)s'
-  )
-  serve(app, host="0.0.0.0", port=1008)
+  app.run(host="0.0.0.0", port=1008, debug=True)

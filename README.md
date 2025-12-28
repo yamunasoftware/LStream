@@ -1,6 +1,6 @@
 # LStream
 
-Video Streaming Client for Web Servers
+Video Streaming Server for Local Networks
 
 ## Build Instructions
 
