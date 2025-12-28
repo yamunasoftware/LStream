@@ -1,6 +1,6 @@
 ### IMPORTS ###
 
-from flask import Flask, request, jsonify, send_file, render_template, send_from_directory
+from flask import Flask, request, jsonify, render_template, send_from_directory
 import requests
 import subprocess
 import os
