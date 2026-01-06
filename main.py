@@ -29,6 +29,8 @@ def convert_video(filename):
   code = subprocess.run(cmd, check=True).returncode
 
   if code != 0:
+    os.remove(input_file)
+    os.remove(output_file)
     raise RuntimeError('FFMPEG Conversion Failed')
 
   os.remove(input_file)
